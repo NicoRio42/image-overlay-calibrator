@@ -54,5 +54,9 @@
 	},
 	"keywords": [
 		"svelte"
-	]
+	],
+	"dependencies": {
+		"@orienteering-js/map": "npm:@jsr/orienteering-js__map",
+		"svelte-maplibre": "^1.0.0-next.12"
+	}
 }

@@ -1,0 +1,33 @@
+<script lang="ts">
+	interface Props {
+		color?: string;
+		text?: string | undefined;
+	}
+
+	let { text, color }: Props = $props();
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" style:color fill="currentColor" viewBox="0 0 32 32">
+	<path
+		stroke="white"
+		stroke-width="1"
+		d="M16 2A11.013 11.013 0 0 0 5 13a10.889 10.889 0 0 0 2.216 6.6s.3.395.349.452L16 30l8.439-9.953c.044-.053.345-.447.345-.447l.001-.003A10.885 10.885 0 0 0 27 13A11.013 11.013 0 0 0 16 2m0 15a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4"
+	/>
+
+	{#if text === undefined}
+		<circle cx="16" cy="13" r="4" fill="white" />
+	{:else}
+		<circle cx="16" cy="13" r="6" />
+
+		<text x="16" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold">
+			{text}
+		</text>
+	{/if}
+</svg>
+
+<style>
+	svg {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+</style>
