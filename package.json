@@ -1,12 +1,12 @@
 {
 	"name": "image-overlay-geo-calibrator",
 	"license": "MIT",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "bun x svelte-kit sync || echo ''",
 		"prepack": "bun x svelte-kit sync && bun x svelte-package && bun x publint",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
