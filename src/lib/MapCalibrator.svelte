@@ -12,8 +12,6 @@
 		ImageSource
 	} from 'svelte-maplibre';
 	import { lonLat2Tile, tile2LonLat } from './utils.js';
-	import type { Style } from './style.model.js';
-	import StyleSelector from './StyleSelector.svelte';
 	import type { Snippet } from 'svelte';
 
 	const INITIAL_MAP_OPACITY = 0.3;
@@ -56,7 +54,7 @@
 		formId?: string;
 		imageInputName?: string;
 		mapUrl?: string;
-		styles: [Style, ...Style[]];
+		style: string;
 		children?: Snippet;
 	}
 
@@ -86,7 +84,7 @@
 		formId,
 		imageInputName,
 		mapUrl = $bindable(),
-		styles,
+		style,
 		children
 	}: Props = $props();
 
@@ -141,8 +139,6 @@
 	let isDrawingCallibrationPointOnMap: 1 | 2 | 3 | null = $state(null);
 	let mapOpacity = $state(INITIAL_MAP_OPACITY);
 	let imageInput: HTMLInputElement | undefined = $state();
-
-	let selectedStyle: Style = $state(styles[0]);
 
 	function onImageMapClick(e: MapMouseEvent & Object) {
 		if (isDrawingCallibrationPointOnImage === null || imageCoordinatesConverter === undefined)
@@ -338,7 +334,7 @@
 	<div class="left-pannel" class:drawing={isDrawingCallibrationPointOnImage}>
 		<MapLibre
 			style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-			class="left-map"
+			class="left-maplibre-map"
 			zoom={imageMapZoom}
 			bounds={imageMapBounds}
 			zoomOnDoubleClick
@@ -404,14 +400,14 @@
 		</button>
 
 		{#if isDrawingCallibrationPointOnImage !== null}
-			<article class="image-help-message">Cliquez sur l'image</article>
+			<article class="help-message">Cliquez sur l'image</article>
 		{/if}
 	</div>
 
 	<div class="right-pannel" class:drawing={isDrawingCallibrationPointOnMap}>
 		<MapLibre
-			style={selectedStyle.url}
-			class="right-map"
+			{style}
+			class="right-maplibre-map"
 			center={realMapCenter}
 			zoom={realMapZoom}
 			bounds={realMapBounds}
@@ -445,12 +441,8 @@
 			{/if}
 		</MapLibre>
 
-		{#if styles.length > 1}
-			<StyleSelector {styles} {selectedStyle} setStyle={(newStyle) => (selectedStyle = newStyle)} />
-		{/if}
-
 		{#if isDrawingCallibrationPointOnMap !== null}
-			<article class="map-help-message">Cliquez sur la carte</article>
+			<article class="help-message">Cliquez sur la carte</article>
 		{/if}
 	</div>
 
@@ -467,7 +459,7 @@
 			point3Y === undefined}
 
 		<article class="central-section">
-			<p>Ajoutez des points de callibration</p>
+			<p><big>Ajoutez des points de callibration</big></p>
 
 			<ul>
 				{@render calibrationPointAction({
@@ -566,13 +558,23 @@
 		{@render pin(pinNumber)}
 
 		{#if canDraw}
-			<button type="button" disabled={isDrawingDisabled} onclick={() => onDraw()} class="btn">
+			<button
+				type="button"
+				disabled={isDrawingDisabled}
+				class="btn btn-secondary"
+				onclick={() => onDraw()}
+			>
 				<i class="icon icon-edit"></i>
 
 				Dessiner
 			</button>
 		{:else}
-			<button type="button" class="btn" onclick={() => onDelete()}>
+			<button
+				type="button"
+				disabled={isDrawingDisabled}
+				class="btn btn-secondary"
+				onclick={() => onDelete()}
+			>
 				<i class="icon icon-delete"></i>
 
 				Supprimer
@@ -626,6 +628,12 @@
 
 <style>
 	:root {
+		/* Help messages */
+		--calibration-help-messages-padding: 1rem;
+		--calibration-help-messages-border-radius: 0.25rem;
+		--calibration-help-messages-color: white;
+		--calibration-help-messages-background-color: green;
+
 		/* Calibration section */
 		--calibration-central-section-background-color: white;
 		--calibration-central-section-border-radius: 0.25rem;
@@ -635,6 +643,7 @@
 		--calibrator-btn-vertical-padding: 0.5rem;
 		--calibrator-btn-horizontal-padding: 0.75rem;
 		--calibrator-btn-background-color: blue;
+		--calibrator-btn-secondary-color: blue;
 		--calibrator-btn-border-radius: 0.25rem;
 
 		/* Pins */
@@ -675,8 +684,8 @@
 		border-right: 2 solid gray;
 	}
 
-	:global(.left-map),
-	:global(.right-map) {
+	:global(.left-maplibre-map),
+	:global(.right-maplibre-map) {
 		width: 100%;
 		height: 100%;
 	}
@@ -695,6 +704,9 @@
 
 	.central-section ul {
 		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
 	.central-section li {
@@ -714,18 +726,22 @@
 		gap: 0.125rem;
 	}
 
-	.image-help-message,
-	.map-help-message {
+	.help-message {
 		position: absolute;
 		z-index: 2;
 		bottom: 1rem;
 		left: 50%;
 		translate: -50%;
-		color: white;
-		background-color: green;
 	}
 
 	/* UI styles */
+	.help-message {
+		padding: var(--calibration-help-messages-padding);
+		background-color: var(--calibration-help-messages-background-color);
+		border-radius: var(--calibration-help-messages-border-radius);
+		color: var(--calibration-help-messages-color);
+	}
+
 	.central-section {
 		background-color: var(--calibration-central-section-background-color);
 		padding: var(--calibration-central-section-padding);
@@ -745,6 +761,16 @@
 		color: white;
 	}
 
+	.btn-secondary {
+		background-color: transparent;
+		color: var(--calibrator-btn-secondary-color);
+		border: 1px solid var(--calibrator-btn-secondary-color);
+	}
+
+	.btn:disabled {
+		opacity: 0.5;
+	}
+
 	.icon {
 		-webkit-mask: var(--callibrator-icon) no-repeat;
 		mask: var(--callibrator-icon) no-repeat;
@@ -761,6 +787,11 @@
 		position: relative;
 	}
 
+	.pin {
+		width: 40px;
+		height: 40px;
+	}
+
 	.pin-number {
 		position: absolute;
 		top: 40%;
@@ -770,10 +801,6 @@
 		font-weight: 700;
 	}
 
-	.pin {
-		width: 2.5rem;
-		height: 2.5rem;
-	}
 	.pin-1 {
 		color: var(--calibrator-pin-1-color);
 	}

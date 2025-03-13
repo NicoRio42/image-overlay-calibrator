@@ -22,20 +22,7 @@
 <MapCalibrator
 	{formId}
 	imageInputName="mapFile"
-	styles={[
-		{
-			url: `https://api.maptiler.com/maps/satellite/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
-			label: 'Satellite'
-		},
-		{
-			url: `https://api.maptiler.com/maps/streets-v2/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
-			label: 'Rues'
-		},
-		{
-			url: `https://api.maptiler.com/maps/topo-v2/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
-			label: 'Topo'
-		}
-	]}
+	style="https://api.maptiler.com/maps/satellite/style.json?key={PUBLIC_MAPTILER_API_KEY}"
 >
 	<label>
 		Map name
