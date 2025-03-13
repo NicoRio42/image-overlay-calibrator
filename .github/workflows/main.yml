@@ -1,4 +1,4 @@
-name: Publish to npm (Bun)
+name: Publish to npm
 
 on:
   push:
@@ -11,23 +11,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          bun-version: 'latest'
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
 
-      - name: Cache Bun dependencies
-        uses: actions/cache@v3
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
         with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-bun-
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Check if version has changed
         id: version-check
@@ -45,9 +46,8 @@ jobs:
             echo "publish=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Setup npm auth for publishing
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      - name: Publish package with Bun
+      - name: Publish package
         if: steps.version-check.outputs.publish == 'true'
-        run: bun publish --access public
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
