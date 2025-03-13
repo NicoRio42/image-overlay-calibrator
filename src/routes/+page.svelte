@@ -1,10 +1,11 @@
 <script lang="ts">
 	import MapCalibrator from '$lib/MapCalibrator.svelte';
 	import maplibregl from 'maplibre-gl';
-	import { GeocodingControl } from '@maptiler/geocoding-control/maplibregl';
+	import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
+	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
 	// import '@picocss/pico/css/pico.css';
-	import '@maptiler/geocoding-control/style.css';
+	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
 	const PUBLIC_MAPTILER_API_KEY = 'wyEJtYuGgZZbbcNKZ3Gu';
 
@@ -27,8 +28,22 @@
 	imageInputName="mapFile"
 	style="https://api.maptiler.com/maps/satellite/style.json?key={PUBLIC_MAPTILER_API_KEY}"
 	onMapLoad={(map) => {
-		const gc = new GeocodingControl({ apiKey: PUBLIC_MAPTILER_API_KEY, maplibregl });
-		map.addControl(gc);
+		const geocoder = new (MaplibreGeocoder as unknown as typeof MaplibreGeocoder.default)(
+			{
+				forwardGeocode: async (config) => {
+					const response = await fetch(
+						`https://api.maptiler.com/geocoding/${config.query}.json?key=${PUBLIC_MAPTILER_API_KEY}`
+					);
+					const geojson = await response.json();
+					return {
+						type: 'FeatureCollection',
+						features: geojson.features
+					};
+				}
+			},
+			{ maplibregl }
+		);
+		map.addControl(geocoder);
 	}}
 >
 	<label>

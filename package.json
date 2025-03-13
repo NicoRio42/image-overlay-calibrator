@@ -1,7 +1,7 @@
 {
 	"name": "image-overlay-geo-calibrator",
 	"license": "MIT",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
@@ -39,7 +39,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
-		"@maptiler/geocoding-control": "^2.1.6",
+		"@maplibre/maplibre-gl-geocoder": "^1.8.0",
 		"@picocss/pico": "^2.0.6",
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/kit": "^2.16.0",
