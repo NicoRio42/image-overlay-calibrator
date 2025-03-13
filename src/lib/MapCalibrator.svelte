@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Pin from './Pin.svelte';
 	import { type MapMouseEvent } from 'maplibre-gl';
 	import { CoordinatesConverter } from '@orienteering-js/map';
 	import {
@@ -12,9 +11,7 @@
 		type LngLatLike,
 		ImageSource
 	} from 'svelte-maplibre';
-	import CallibrationPointAction from './CallibrationPointAction.svelte';
 	import { lonLat2Tile, tile2LonLat } from './utils.js';
-	import LoadImageWidget from './LoadImageWidget.svelte';
 	import type { Style } from './style.model.js';
 	import StyleSelector from './StyleSelector.svelte';
 	import type { Snippet } from 'svelte';
@@ -143,6 +140,7 @@
 	let isDrawingCallibrationPointOnImage: 1 | 2 | 3 | null = $state(null);
 	let isDrawingCallibrationPointOnMap: 1 | 2 | 3 | null = $state(null);
 	let mapOpacity = $state(INITIAL_MAP_OPACITY);
+	let imageInput: HTMLInputElement | undefined = $state();
 
 	let selectedStyle: Style = $state(styles[0]);
 
@@ -363,7 +361,7 @@
 				{@const lngLat = imageCoordinatesConverter.xYToLatLong([point1X, point1Y])}
 
 				<Marker lngLat={{ lon: lngLat[1], lat: lngLat[0] }} offset={[0, -20]}>
-					<Pin color="red" text="1" />
+					{@render pin(1)}
 				</Marker>
 			{/if}
 
@@ -371,7 +369,7 @@
 				{@const lngLat = imageCoordinatesConverter.xYToLatLong([point2X, point2Y])}
 
 				<Marker lngLat={{ lon: lngLat[1], lat: lngLat[0] }} offset={[0, -20]}>
-					<Pin color="green" text="2" />
+					{@render pin(2)}
 				</Marker>
 			{/if}
 
@@ -379,12 +377,31 @@
 				{@const lngLat = imageCoordinatesConverter.xYToLatLong([point3X, point3Y])}
 
 				<Marker lngLat={{ lon: lngLat[1], lat: lngLat[0] }} offset={[0, -20]}>
-					<Pin color="blue" text="3" />
+					{@render pin(3)}
 				</Marker>
 			{/if}
 		</MapLibre>
 
-		<LoadImageWidget {formId} {handleMapFileLoading} {imageInputName} {mapUrl} />
+		<input
+			bind:this={imageInput}
+			type="file"
+			name={imageInputName}
+			form={formId}
+			style="display: none;"
+			accept="image/*"
+			oninput={handleMapFileLoading}
+		/>
+
+		<button
+			type="button"
+			onclick={() => imageInput?.click()}
+			class="load-image-btn btn"
+			style:display={mapUrl === undefined ? 'flex' : 'none'}
+		>
+			<i class="icon icon-upload"></i>
+
+			Load image
+		</button>
 
 		{#if isDrawingCallibrationPointOnImage !== null}
 			<article class="image-help-message">Cliquez sur l'image</article>
@@ -411,19 +428,19 @@
 
 			{#if point1LonLat !== undefined}
 				<Marker bind:lngLat={point1LonLat} draggable offset={[0, -20]}>
-					<Pin color="red" text="1" />
+					{@render pin(1)}
 				</Marker>
 			{/if}
 
 			{#if point2LonLat !== undefined}
 				<Marker bind:lngLat={point2LonLat} draggable offset={[0, -20]}>
-					<Pin color="green" text="2" />
+					{@render pin(2)}
 				</Marker>
 			{/if}
 
 			{#if point3LonLat !== undefined}
 				<Marker bind:lngLat={point3LonLat} draggable offset={[0, -20]}>
-					<Pin color="blue" text="3" />
+					{@render pin(3)}
 				</Marker>
 			{/if}
 		</MapLibre>
@@ -449,64 +466,62 @@
 			point3X === undefined ||
 			point3Y === undefined}
 
-		<article class="calibration-section">
+		<article class="central-section">
 			<p>Ajoutez des points de callibration</p>
 
 			<ul>
-				<CallibrationPointAction
-					canDraw={point1LonLat === undefined || point1X === undefined || point1Y === undefined}
-					isDrawingDisabled={isDrawingCallibrationPointOnImage !== null ||
-						isDrawingCallibrationPointOnMap !== null}
-					onDraw={() => (isDrawingCallibrationPointOnImage = 1)}
-					onDelete={() => {
+				{@render calibrationPointAction({
+					canDraw: point1LonLat === undefined || point1X === undefined || point1Y === undefined,
+					isDrawingDisabled:
+						isDrawingCallibrationPointOnImage !== null || isDrawingCallibrationPointOnMap !== null,
+					onDraw: () => (isDrawingCallibrationPointOnImage = 1),
+					onDelete: () => {
 						point1LonLat = undefined;
 						point1Longitude = undefined;
 						point1Latitude = undefined;
 						point1X = undefined;
 						point1Y = undefined;
 						coordinatesOnRealMap = undefined;
-					}}
-				>
-					<Pin color="red" text="1" />
-				</CallibrationPointAction>
+					},
+					pinNumber: 1
+				})}
 
-				<CallibrationPointAction
-					canDraw={point2LonLat === undefined || point2X === undefined || point2Y === undefined}
-					isDrawingDisabled={isDrawingCallibrationPointOnImage !== null ||
-						isDrawingCallibrationPointOnMap !== null}
-					onDraw={() => (isDrawingCallibrationPointOnImage = 2)}
-					onDelete={() => {
+				{@render calibrationPointAction({
+					canDraw: point2LonLat === undefined || point2X === undefined || point2Y === undefined,
+					isDrawingDisabled:
+						isDrawingCallibrationPointOnImage !== null || isDrawingCallibrationPointOnMap !== null,
+					onDraw: () => (isDrawingCallibrationPointOnImage = 2),
+					onDelete: () => {
 						point2LonLat = undefined;
 						point2Longitude = undefined;
 						point2Latitude = undefined;
 						point2X = undefined;
 						point2Y = undefined;
 						coordinatesOnRealMap = undefined;
-					}}
-				>
-					<Pin color="green" text="2" />
-				</CallibrationPointAction>
+					},
+					pinNumber: 2
+				})}
 
-				<CallibrationPointAction
-					canDraw={point3LonLat === undefined || point3X === undefined || point3Y === undefined}
-					isDrawingDisabled={isDrawingCallibrationPointOnImage !== null ||
-						isDrawingCallibrationPointOnMap !== null}
-					onDraw={() => (isDrawingCallibrationPointOnImage = 3)}
-					onDelete={() => {
+				{@render calibrationPointAction({
+					canDraw: point3LonLat === undefined || point3X === undefined || point3Y === undefined,
+					isDrawingDisabled:
+						isDrawingCallibrationPointOnImage !== null || isDrawingCallibrationPointOnMap !== null,
+					onDraw: () => (isDrawingCallibrationPointOnImage = 3),
+					onDelete: () => {
 						point3LonLat = undefined;
 						point3Longitude = undefined;
 						point3Latitude = undefined;
 						point3X = undefined;
 						point3Y = undefined;
 						coordinatesOnRealMap = undefined;
-					}}
-				>
-					<Pin color="blue" text="3" />
-				</CallibrationPointAction>
+					},
+					pinNumber: 3
+				})}
 			</ul>
 
-			<label>
+			<label class="preview-label">
 				Previsualiser
+
 				<input
 					type="range"
 					disabled={isPreviewDisabled}
@@ -517,18 +532,74 @@
 				/>
 			</label>
 
-			{@render children?.()}
-
 			{#if isPreviewDisabled}
 				<p>
 					<small>Vous devez dessiner les 3 points pour pouvoir prévisualiser</small>
 				</p>
 			{/if}
 
-			<button type="submit" disabled={isPreviewDisabled} form={formId}> Soumettre </button>
+			{@render children?.()}
+
+			<button type="submit" disabled={isPreviewDisabled} form={formId} class="btn">
+				<i class="icon icon-save"></i>
+
+				Soumettre
+			</button>
 		</article>
 	{/if}
 </div>
+
+{#snippet calibrationPointAction({
+	canDraw,
+	isDrawingDisabled,
+	onDelete,
+	onDraw,
+	pinNumber
+}: {
+	isDrawingDisabled: boolean;
+	canDraw: boolean;
+	pinNumber: 1 | 2 | 3;
+	onDraw: () => void;
+	onDelete: () => void;
+})}
+	<li>
+		{@render pin(pinNumber)}
+
+		{#if canDraw}
+			<button type="button" disabled={isDrawingDisabled} onclick={() => onDraw()} class="btn">
+				<i class="icon icon-edit"></i>
+
+				Dessiner
+			</button>
+		{:else}
+			<button type="button" class="btn" onclick={() => onDelete()}>
+				<i class="icon icon-delete"></i>
+
+				Supprimer
+			</button>
+		{/if}
+	</li>
+{/snippet}
+
+{#snippet pin(pinNumber: 1 | 2 | 3)}
+	<div class="pin-container">
+		<i
+			class={[
+				'icon icon-location pin',
+				{
+					'pin-1': pinNumber === 1,
+					'pin-2': pinNumber === 2,
+					'pin-3': pinNumber === 3
+				}
+			]}
+		>
+		</i>
+
+		<span class="pin-number">
+			{pinNumber}
+		</span>
+	</div>
+{/snippet}
 
 <input type="hidden" form={formId} name="point1Longitude" bind:value={point1Longitude} />
 <input type="hidden" form={formId} name="point1Latitude" bind:value={point1Latitude} />
@@ -554,11 +625,45 @@
 <input type="hidden" form={formId} name="height" bind:value={mapHeight} />
 
 <style>
+	:root {
+		/* Calibration section */
+		--calibration-central-section-background-color: white;
+		--calibration-central-section-border-radius: 0.25rem;
+		--calibration-central-section-padding: 1rem;
+
+		/* Buttons */
+		--calibrator-btn-vertical-padding: 0.5rem;
+		--calibrator-btn-horizontal-padding: 0.75rem;
+		--calibrator-btn-background-color: blue;
+		--calibrator-btn-border-radius: 0.25rem;
+
+		/* Pins */
+		--calibrator-pin-1-color: red;
+		--calibrator-pin-2-color: green;
+		--calibrator-pin-3-color: blue;
+
+		/* Icons */
+		--calibrator-location-icon: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22M%2016%202%20C%209.928%202.007%205.007%206.928%205%2013%20C%204.997%2015.383%205.776%2017.701%207.216%2019.6%20C%207.216%2019.6%207.516%2019.995%207.565%2020.052%20L%2016%2030%20L%2024.439%2020.047%20C%2024.483%2019.994%2024.784%2019.6%2024.784%2019.6%20L%2024.785%2019.597%20C%2026.224%2017.699%2027.002%2015.382%2027%2013%20C%2026.993%206.928%2022.072%202.007%2016%202%22%2F%3E%3C%2Fsvg%3E');
+		--calibrator-upload-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 32 32'%3E%3C!-- Icon from Carbon by IBM - undefined --%3E%3Cpath fill='currentColor' d='m6 18l1.41 1.41L15 11.83V30h2V11.83l7.59 7.58L26 18L16 8zM6 8V4h20v4h2V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4z'/%3E%3C/svg%3E");
+		--calibrator-edit-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 32 32'%3E%3C!-- Icon from Carbon by IBM - undefined --%3E%3Cpath fill='currentColor' d='M2 26h28v2H2zM25.4 9c.8-.8.8-2 0-2.8l-3.6-3.6c-.8-.8-2-.8-2.8 0l-15 15V24h6.4zm-5-5L24 7.6l-3 3L17.4 7zM6 22v-3.6l10-10l3.6 3.6l-10 10z'/%3E%3C/svg%3E");
+		--calibrator-delete-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 32 32'%3E%3C!-- Icon from Carbon by IBM - undefined --%3E%3Cpath fill='currentColor' d='M12 12h2v12h-2zm6 0h2v12h-2z'/%3E%3Cpath fill='currentColor' d='M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z'/%3E%3C/svg%3E");
+		--calibrator-delete-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 32 32'%3E%3C!-- Icon from Carbon by IBM - undefined --%3E%3Cpath fill='currentColor' d='M12 12h2v12h-2zm6 0h2v12h-2z'/%3E%3Cpath fill='currentColor' d='M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z'/%3E%3C/svg%3E");
+		--calibrator-save-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 32 32'%3E%3C!-- Icon from Carbon by IBM - undefined --%3E%3Cpath fill='currentColor' d='m27.71 9.29l-5-5A1 1 0 0 0 22 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V10a1 1 0 0 0-.29-.71M12 6h8v4h-8Zm8 20h-8v-8h8Zm2 0v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8H6V6h4v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6.41l4 4V26Z'/%3E%3C/svg%3E");
+	}
+
+	/* Layout styles */
 	.main-container {
 		height: 100%;
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0;
+	}
+
+	.load-image-btn {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		translate: -50% -50%;
 	}
 
 	.left-pannel,
@@ -576,15 +681,37 @@
 		height: 100%;
 	}
 
-	.calibration-section {
+	.central-section {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		translate: -50% -50%;
 		max-width: 16rem;
-		background-color: white;
-		padding: 1rem;
-		border-radius: 0.25rem;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.central-section ul {
+		padding: 0;
+	}
+
+	.central-section li {
+		list-style-type: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.central-section li button {
+		flex-grow: 1;
+	}
+
+	.preview-label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
 	}
 
 	.image-help-message,
@@ -596,6 +723,81 @@
 		translate: -50%;
 		color: white;
 		background-color: green;
+	}
+
+	/* UI styles */
+	.central-section {
+		background-color: var(--calibration-central-section-background-color);
+		padding: var(--calibration-central-section-padding);
+		border-radius: var(--calibration-central-section-border-radius);
+	}
+
+	.btn {
+		margin: 0;
+		padding: var(--calibrator-btn-vertical-padding) var(--calibrator-btn-horizontal-padding);
+		background-color: var(--calibrator-btn-background-color);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		border-radius: var(--calibrator-btn-border-radius);
+		border-style: none;
+		color: white;
+	}
+
+	.icon {
+		-webkit-mask: var(--callibrator-icon) no-repeat;
+		mask: var(--callibrator-icon) no-repeat;
+		-webkit-mask-size: 100% 100%;
+		mask-size: 100% 100%;
+		background-color: currentColor;
+		color: inherit;
+		display: inline-block;
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.pin-container {
+		position: relative;
+	}
+
+	.pin-number {
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		translate: -50% -50%;
+		color: white;
+		font-weight: 700;
+	}
+
+	.pin {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+	.pin-1 {
+		color: var(--calibrator-pin-1-color);
+	}
+	.pin-2 {
+		color: var(--calibrator-pin-2-color);
+	}
+	.pin-3 {
+		color: var(--calibrator-pin-3-color);
+	}
+
+	.icon-location {
+		--callibrator-icon: var(--calibrator-location-icon);
+	}
+	.icon-upload {
+		--callibrator-icon: var(--calibrator-upload-icon);
+	}
+	.icon-edit {
+		--callibrator-icon: var(--calibrator-edit-icon);
+	}
+	.icon-delete {
+		--callibrator-icon: var(--calibrator-delete-icon);
+	}
+	.icon-save {
+		--callibrator-icon: var(--calibrator-save-icon);
 	}
 
 	:global(.maplibregl-ctrl button[type='button']) {

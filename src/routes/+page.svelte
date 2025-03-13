@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MapCalibrator from '$lib/MapCalibrator.svelte';
 
-	import '@picocss/pico/css/pico.css';
+	// import '@picocss/pico/css/pico.css';
 
 	const PUBLIC_MAPTILER_API_KEY = 'wyEJtYuGgZZbbcNKZ3Gu';
 
