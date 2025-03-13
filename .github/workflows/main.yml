@@ -1,0 +1,53 @@
+name: Publish to npm (Bun)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 'latest'
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check if version has changed
+        id: version-check
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "Current version: $VERSION"
+          git fetch origin main --depth=2
+          PREV_VERSION=$(git show HEAD~1:package.json | jq -r '.version')
+          echo "Previous version: $PREV_VERSION"
+          if [ "$VERSION" == "$PREV_VERSION" ]; then
+            echo "No version change detected, skipping publish."
+            echo "publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version change detected, will publish."
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup npm auth for publishing
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Publish package with Bun
+        if: steps.version-check.outputs.publish == 'true'
+        run: bun publish --access public

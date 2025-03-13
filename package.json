@@ -1,6 +1,7 @@
 {
 	"name": "image-overlay-geo-calibrator",
-	"version": "0.0.1",
+	"license": "MIT",
+	"version": "0.0.2",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
@@ -15,7 +16,10 @@
 	"files": [
 		"dist",
 		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
+		"!dist/**/*.spec.*",
+		"src/lib",
+		"!src/lib/**/*.test.*",
+		"!src/lib/**/*.spec.*"
 	],
 	"sideEffects": [
 		"**/*.css"
