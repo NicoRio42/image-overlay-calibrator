@@ -1,10 +1,25 @@
-<script>
+<script lang="ts">
 	import MapCalibrator from '$lib/MapCalibrator.svelte';
 
 	const PUBLIC_MAPTILER_API_KEY = 'wyEJtYuGgZZbbcNKZ3Gu';
+
+	const formId = 'form-id';
 </script>
 
+<form
+	id={formId}
+	onsubmit={(e: SubmitEvent) => {
+		e.preventDefault();
+
+		const formData = new FormData(e.target as HTMLFormElement);
+
+		formData.forEach((value, key) => console.log({ key, value }));
+	}}
+></form>
+
 <MapCalibrator
+	{formId}
+	imageInputName="mapFile"
 	styles={[
 		{
 			url: `https://api.maptiler.com/maps/satellite/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
@@ -19,7 +34,13 @@
 			label: 'Topo'
 		}
 	]}
-/>
+>
+	<label>
+		Map name
+
+		<input type="text" name="name" form={formId} required />
+	</label>
+</MapCalibrator>
 
 <style>
 	:global(html),

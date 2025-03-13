@@ -17,6 +17,7 @@
 	import LoadImageWidget from './LoadImageWidget.svelte';
 	import type { Style } from './style.model.js';
 	import StyleSelector from './StyleSelector.svelte';
+	import type { Snippet } from 'svelte';
 
 	const INITIAL_MAP_OPACITY = 0.3;
 
@@ -59,6 +60,7 @@
 		imageInputName?: string;
 		mapUrl?: string;
 		styles: [Style, ...Style[]];
+		children?: Snippet;
 	}
 
 	let {
@@ -87,7 +89,8 @@
 		formId,
 		imageInputName,
 		mapUrl = $bindable(),
-		styles
+		styles,
+		children
 	}: Props = $props();
 
 	let point1LonLat: LonLatPoint | undefined = $state();
@@ -514,6 +517,8 @@
 				/>
 			</label>
 
+			{@render children?.()}
+
 			{#if isPreviewDisabled}
 				<p>
 					<small>Vous devez dessiner les 3 points pour pouvoir prévisualiser</small>
@@ -524,6 +529,29 @@
 		</article>
 	{/if}
 </div>
+
+<input type="hidden" form={formId} name="point1Longitude" bind:value={point1Longitude} />
+<input type="hidden" form={formId} name="point1Latitude" bind:value={point1Latitude} />
+<input type="hidden" form={formId} name="point1X" bind:value={point1X} />
+<input type="hidden" form={formId} name="point1Y" bind:value={point1Y} />
+<input type="hidden" form={formId} name="point2Longitude" bind:value={point2Longitude} />
+<input type="hidden" form={formId} name="point2Latitude" bind:value={point2Latitude} />
+<input type="hidden" form={formId} name="point2X" bind:value={point2X} />
+<input type="hidden" form={formId} name="point2Y" bind:value={point2Y} />
+<input type="hidden" form={formId} name="point3Longitude" bind:value={point3Longitude} />
+<input type="hidden" form={formId} name="point3Latitude" bind:value={point3Latitude} />
+<input type="hidden" form={formId} name="point3X" bind:value={point3X} />
+<input type="hidden" form={formId} name="point3Y" bind:value={point3Y} />
+<input type="hidden" form={formId} name="topLeftLongitude" bind:value={topLeftLongitude} />
+<input type="hidden" form={formId} name="topLeftLatitude" bind:value={topLeftLatitude} />
+<input type="hidden" form={formId} name="topRightLongitude" bind:value={topRightLongitude} />
+<input type="hidden" form={formId} name="topRightLatitude" bind:value={topRightLatitude} />
+<input type="hidden" form={formId} name="bottomRightLongitude" bind:value={bottomRightLongitude} />
+<input type="hidden" form={formId} name="bottomRightLatitude" bind:value={bottomRightLatitude} />
+<input type="hidden" form={formId} name="bottomLeftLongitude" bind:value={bottomLeftLongitude} />
+<input type="hidden" form={formId} name="bottomLeftLatitude" bind:value={bottomLeftLatitude} />
+<input type="hidden" form={formId} name="width" bind:value={mapWidth} />
+<input type="hidden" form={formId} name="height" bind:value={mapHeight} />
 
 <style>
 	.main-container {
