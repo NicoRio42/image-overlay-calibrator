@@ -1,3 +1,5 @@
+<svelte:options customElement="map-calibrator" />
+
 <script lang="ts">
 	import { CoordinatesConverter } from '@orienteering-js/map';
 	import type { Map, MapMouseEvent } from 'maplibre-gl';
