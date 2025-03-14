@@ -4,7 +4,10 @@
 	import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
-	// import '@picocss/pico/css/pico.css';
+	import '@picocss/pico/css/pico.css';
+
+	import './global.css';
+
 	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
 	const PUBLIC_MAPTILER_API_KEY = 'wyEJtYuGgZZbbcNKZ3Gu';
@@ -12,52 +15,60 @@
 	const formId = 'form-id';
 </script>
 
-<form
-	id={formId}
-	onsubmit={(e: SubmitEvent) => {
-		e.preventDefault();
+<div class="wrapper">
+	<form
+		id={formId}
+		onsubmit={(e: SubmitEvent) => {
+			e.preventDefault();
 
-		const formData = new FormData(e.target as HTMLFormElement);
+			const formData = new FormData(e.target as HTMLFormElement);
 
-		formData.forEach((value, key) => console.log({ key, value }));
-	}}
-></form>
+			formData.forEach((value, key) => console.log({ key, value }));
+		}}
+	></form>
 
-<MapCalibrator
-	{formId}
-	imageInputName="mapFile"
-	style="https://api.maptiler.com/maps/satellite/style.json?key={PUBLIC_MAPTILER_API_KEY}"
-	onMapLoad={(map) => {
-		const geocoder = new (MaplibreGeocoder as unknown as typeof MaplibreGeocoder.default)(
-			{
-				forwardGeocode: async (config) => {
-					const response = await fetch(
-						`https://api.maptiler.com/geocoding/${config.query}.json?key=${PUBLIC_MAPTILER_API_KEY}`
-					);
-					const geojson = await response.json();
-					return {
-						type: 'FeatureCollection',
-						features: geojson.features
-					};
-				}
-			},
-			{ maplibregl }
-		);
-		map.addControl(geocoder);
-	}}
->
-	<label>
-		Map name
+	<nav>Toto</nav>
 
-		<input type="text" name="name" form={formId} required />
-	</label>
-</MapCalibrator>
+	<MapCalibrator
+		{formId}
+		imageInputName="mapFile"
+		style="https://api.maptiler.com/maps/satellite/style.json?key={PUBLIC_MAPTILER_API_KEY}"
+		onMapLoad={(map) => {
+			const geocoder = new (MaplibreGeocoder as unknown as typeof MaplibreGeocoder.default)(
+				{
+					forwardGeocode: async (config) => {
+						const response = await fetch(
+							`https://api.maptiler.com/geocoding/${config.query}.json?key=${PUBLIC_MAPTILER_API_KEY}`
+						);
+						const geojson = await response.json();
+						return {
+							type: 'FeatureCollection',
+							features: geojson.features
+						};
+					}
+				},
+				{ maplibregl }
+			);
+			map.addControl(geocoder);
+		}}
+	>
+		<label>
+			Map name
+
+			<input type="text" name="name" form={formId} required />
+		</label>
+	</MapCalibrator>
+</div>
 
 <style>
-	:global(html),
-	:global(body) {
+	.wrapper {
+		position: relative;
+		display: flex;
+		flex-direction: column;
 		height: 100%;
-		height: 100dvh;
-		margin: 0;
+	}
+
+	form {
+		display: none;
 	}
 </style>

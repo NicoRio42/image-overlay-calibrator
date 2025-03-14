@@ -661,6 +661,7 @@
 	.main-container {
 		height: 100%;
 		display: grid;
+		align-items: stretch;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0;
 	}
