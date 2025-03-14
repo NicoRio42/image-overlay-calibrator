@@ -1,0 +1,36 @@
+export type Labels = {
+	LOAD_IMAGE_BTN: string;
+	CALIBRATION_SECTION_TITLE: string;
+	CALIBRATION_SECTION_DRAW_BTN: string;
+	CALIBRATION_SECTION_DELETE_BTN: string;
+	CALIBRATION_SECTION_MAP_OPACITY_RANGE_LABEL: string;
+	CALIBRATION_SECTION_PREVIEW_DISABLED_MSG: string;
+	CALIBRATION_SECTION_SUBMIT_BTN: string;
+	IMAGE_PANNEL_HELP_MSG: string;
+	MAP_PANNEL_HELP_MSG: string;
+};
+
+export const ENGLISH_LABELS: Labels = {
+	LOAD_IMAGE_BTN: 'Load image',
+	CALIBRATION_SECTION_TITLE: 'Add calibration points',
+	CALIBRATION_SECTION_DRAW_BTN: 'Draw',
+	CALIBRATION_SECTION_DELETE_BTN: 'Delete',
+	CALIBRATION_SECTION_MAP_OPACITY_RANGE_LABEL: 'Preview',
+	CALIBRATION_SECTION_PREVIEW_DISABLED_MSG: 'You should draw the 3 points to preview the result',
+	CALIBRATION_SECTION_SUBMIT_BTN: 'Submit',
+	IMAGE_PANNEL_HELP_MSG: 'Click on the image',
+	MAP_PANNEL_HELP_MSG: 'Click on the map'
+};
+
+export const FRENCH_LABELS: Labels = {
+	LOAD_IMAGE_BTN: 'Charger une image',
+	CALIBRATION_SECTION_TITLE: 'Ajouter les points de calibration',
+	CALIBRATION_SECTION_DRAW_BTN: 'Dessiner',
+	CALIBRATION_SECTION_DELETE_BTN: 'Supprimer',
+	CALIBRATION_SECTION_MAP_OPACITY_RANGE_LABEL: 'Prévisualiser',
+	CALIBRATION_SECTION_PREVIEW_DISABLED_MSG:
+		'Vous devez dessiner les 3 points pour pouvoir prévisualiser',
+	CALIBRATION_SECTION_SUBMIT_BTN: 'Valider',
+	IMAGE_PANNEL_HELP_MSG: "Cliquez sur l'image",
+	MAP_PANNEL_HELP_MSG: 'Cliquez sur la carte'
+};

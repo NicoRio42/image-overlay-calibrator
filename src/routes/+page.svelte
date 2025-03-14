@@ -4,10 +4,10 @@
 	import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
-	import '@picocss/pico/css/pico.css';
-
+	// import '@picocss/pico/css/pico.css';
+	// Keep styles imports in this order
 	import './global.css';
-
+	// Keep styles imports in this order
 	import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 
 	const PUBLIC_MAPTILER_API_KEY = 'wyEJtYuGgZZbbcNKZ3Gu';

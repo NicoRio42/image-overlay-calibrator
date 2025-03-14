@@ -14,6 +14,7 @@
 		type LngLatLike
 	} from 'svelte-maplibre';
 	import { lonLat2Tile, tile2LonLat } from './utils.js';
+	import { ENGLISH_LABELS, type Labels } from './labels.js';
 
 	const INITIAL_MAP_OPACITY = 0.3;
 
@@ -30,6 +31,7 @@
 	];
 
 	interface Props {
+		style: string;
 		point1Longitude?: number;
 		point1Latitude?: number;
 		point1X?: number;
@@ -55,14 +57,15 @@
 		formId?: string;
 		imageInputName?: string;
 		mapUrl?: string;
-		style: string;
 		initialZoom?: number;
 		initialCenter?: [number, number];
+		labels?: Partial<Labels>;
 		onMapLoad?: (map: Map) => void;
 		children?: Snippet;
 	}
 
 	let {
+		style,
 		point1Longitude = $bindable(),
 		point1Latitude = $bindable(),
 		point1X = $bindable(),
@@ -88,9 +91,9 @@
 		formId,
 		imageInputName,
 		mapUrl = $bindable(),
-		style,
 		initialCenter,
 		initialZoom,
+		labels,
 		onMapLoad,
 		children
 	}: Props = $props();
@@ -398,11 +401,13 @@
 		>
 			<i class="icon icon-upload"></i>
 
-			Load image
+			{labels?.LOAD_IMAGE_BTN ?? ENGLISH_LABELS.LOAD_IMAGE_BTN}
 		</button>
 
 		{#if isDrawingCallibrationPointOnImage !== null}
-			<article class="help-message">Cliquez sur l'image</article>
+			<article class="help-message">
+				{labels?.IMAGE_PANNEL_HELP_MSG ?? ENGLISH_LABELS.IMAGE_PANNEL_HELP_MSG}
+			</article>
 		{/if}
 	</div>
 
@@ -445,7 +450,9 @@
 		</MapLibre>
 
 		{#if isDrawingCallibrationPointOnMap !== null}
-			<article class="help-message">Cliquez sur la carte</article>
+			<article class="help-message">
+				{labels?.MAP_PANNEL_HELP_MSG ?? ENGLISH_LABELS.MAP_PANNEL_HELP_MSG}
+			</article>
 		{/if}
 	</div>
 
@@ -462,7 +469,11 @@
 			point3Y === undefined}
 
 		<article class="central-section">
-			<p><big>Ajoutez des points de callibration</big></p>
+			<p>
+				<big>
+					{labels?.CALIBRATION_SECTION_TITLE ?? ENGLISH_LABELS.CALIBRATION_SECTION_TITLE}
+				</big>
+			</p>
 
 			<ul>
 				{@render calibrationPointAction({
@@ -515,7 +526,8 @@
 			</ul>
 
 			<label class="preview-label">
-				Previsualiser
+				{labels?.CALIBRATION_SECTION_MAP_OPACITY_RANGE_LABEL ??
+					ENGLISH_LABELS.CALIBRATION_SECTION_MAP_OPACITY_RANGE_LABEL}
 
 				<input
 					type="range"
@@ -529,7 +541,10 @@
 
 			{#if isPreviewDisabled}
 				<p>
-					<small>Vous devez dessiner les 3 points pour pouvoir prévisualiser</small>
+					<small>
+						{labels?.CALIBRATION_SECTION_PREVIEW_DISABLED_MSG ??
+							ENGLISH_LABELS.CALIBRATION_SECTION_PREVIEW_DISABLED_MSG}
+					</small>
 				</p>
 			{/if}
 
@@ -538,7 +553,7 @@
 			<button type="submit" disabled={isPreviewDisabled} form={formId} class="btn">
 				<i class="icon icon-save"></i>
 
-				Soumettre
+				{labels?.CALIBRATION_SECTION_SUBMIT_BTN ?? ENGLISH_LABELS.CALIBRATION_SECTION_SUBMIT_BTN}
 			</button>
 		</article>
 	{/if}
@@ -569,7 +584,7 @@
 			>
 				<i class="icon icon-edit"></i>
 
-				Dessiner
+				{labels?.CALIBRATION_SECTION_DRAW_BTN ?? ENGLISH_LABELS.CALIBRATION_SECTION_DRAW_BTN}
 			</button>
 		{:else}
 			<button
@@ -580,7 +595,7 @@
 			>
 				<i class="icon icon-delete"></i>
 
-				Supprimer
+				{labels?.CALIBRATION_SECTION_DELETE_BTN ?? ENGLISH_LABELS.CALIBRATION_SECTION_DELETE_BTN}
 			</button>
 		{/if}
 	</li>
