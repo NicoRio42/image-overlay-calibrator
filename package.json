@@ -1,7 +1,7 @@
 {
 	"name": "image-overlay-geo-calibrator",
 	"license": "MIT",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
@@ -36,8 +36,8 @@
 		},
 		"./custom-element": "./dist/custom-element.js",
 		"./labels": {
-			"default": "./dist/labels.js",
-			"types": "./dist/labels.d.ts"
+			"types": "./dist/labels.d.ts",
+			"default": "./dist/labels.js"
 		}
 	},
 	"peerDependencies": {
