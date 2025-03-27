@@ -51,6 +51,14 @@
 			);
 			map.addControl(geocoder);
 		}}
+		acceptImage={({ width }) => {
+			if (width > 10_000) {
+				alert('Too big');
+				return false;
+			}
+
+			return true;
+		}}
 	>
 		<label>
 			Map name

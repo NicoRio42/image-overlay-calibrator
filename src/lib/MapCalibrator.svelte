@@ -61,6 +61,11 @@
 		initialCenter?: [number, number];
 		labels?: Partial<Labels>;
 		onMapLoad?: (map: Map) => void;
+		acceptImage?: (args: {
+			file: File;
+			width: number;
+			height: number;
+		}) => boolean | Promise<boolean>;
 		children?: Snippet;
 	}
 
@@ -95,6 +100,7 @@
 		initialZoom,
 		labels,
 		onMapLoad,
+		acceptImage,
 		children
 	}: Props = $props();
 
@@ -240,9 +246,15 @@
 		reader.onload = function (e) {
 			const image = new Image();
 			image.src = e.target!.result as string;
-			mapUrl = e.target!.result as string;
 
-			image.onload = function () {
+			image.onload = async function () {
+				const isImageAccepted =
+					acceptImage === undefined ||
+					(await acceptImage({ file, width: image.width, height: image.height }));
+
+				if (!isImageAccepted) return;
+
+				mapUrl = image.src;
 				mapWidth = image.width;
 				mapHeight = image.height;
 				coordinates = getCoordinates(mapWidth, mapHeight);
